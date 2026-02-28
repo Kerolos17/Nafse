@@ -1,15 +1,17 @@
-// Vercel Serverless Function - API Proxy for Anthropic
+// Vercel Serverless Function - API Proxy for Google Gemini
+import { GoogleGenAI } from "@google/genai";
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+    "GET,OPTIONS,PATCH,DELETE,POST,PUT"
   );
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
   // Handle preflight
@@ -30,37 +32,35 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "API Key is required" });
     }
 
-    // Call Anthropic API
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 600,
-        system: system,
-        messages: messages,
-      }),
+    // Initialize the Official SDK with the provided key
+    const ai = new GoogleGenAI({ apiKey: apiKey });
+
+    // Format messages for Gemini sdk
+    const formattedMsgs = messages.filter((m, i, arr) => i !== arr.length -1).map(m => ({
+        role: m.role === 'assistant' ? 'model' : m.role,
+        parts: [{ text: m.content || m.parts[0].text }]
+    }));
+    
+    // Create the chat session
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: req.body.messages,
+        config: {
+            systemInstruction: system,
+            maxOutputTokens: 800,
+        }
     });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      return res.status(response.status).json({
-        error: error.error?.message || "API request failed",
-        status: response.status,
-      });
-    }
-
-    const data = await response.json();
-    return res.status(200).json(data);
+    // Return the response mimicking the previous structure so app.js doesn't break if it was slightly different
+    return res.status(200).json({
+        content: [{ text: response.text }] 
+    });
   } catch (error) {
     console.error("Proxy error:", error);
-    return res.status(500).json({
-      error: "Internal server error",
-      message: error.message,
+
+    // Provide error response
+    return res.status(error.status || 500).json({
+      error: error.message || "Internal server error",
     });
   }
 }
