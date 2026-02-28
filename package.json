@@ -4,8 +4,7 @@
   "description": "90-day habit tracker with AI assistant",
   "scripts": {
     "dev": "vercel dev",
-    "build": "vercel build",
-    "deploy": "vercel --prod"
+    "build": "echo 'No build command required'"
   },
   "keywords": [
     "habit-tracker",
