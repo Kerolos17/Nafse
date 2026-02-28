@@ -2407,15 +2407,38 @@ ${S.habits
             const data = await res.json();
             return data.content?.[0]?.text || "مفيش رد.";
           } else {
-            // Direct API call for local testing (will have CORS issues)
-            return "⚠️ للاستخدام المحلي:\n\n1️⃣ شغّل: vercel dev\n2️⃣ افتح: http://localhost:3000\n\nأو ارفع على Vercel مباشرة!";
+            // Use CORS proxy for local testing
+            const corsProxy = "https://corsproxy.io/?";
+            const apiUrl = "https://api.anthropic.com/v1/messages";
+            const res = await fetch(corsProxy + encodeURIComponent(apiUrl), {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": S.apiKey,
+                "anthropic-version": "2023-06-01",
+              },
+              body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 600,
+                system: sys || buildCtx(),
+                messages: msgs,
+              }),
+            });
+
+            if (!res.ok) {
+              const e = await res.json().catch(() => ({}));
+              if (res.status === 401) return "❌ الـ API Key غلط. تأكد منه.";
+              if (res.status === 429)
+                return "⏳ ضغط على الـ API، استنى ثواني وحاول.";
+              return `❌ خطأ ${res.status}: ${e.error?.message || "حاول تاني"}`;
+            }
+
+            const data = await res.json();
+            return data.content?.[0]?.text || "مفيش رد.";
           }
         } catch (e) {
           console.error("API Error:", e);
-          if (e.message && e.message.includes("Failed to fetch")) {
-            return "❌ مفيش اتصال بالـ API.\n\nللتشغيل المحلي:\n• شغّل: vercel dev\n• افتح: http://localhost:3000\n\nأو ارفع المشروع على Vercel!";
-          }
-          return "❌ مشكلة في الاتصال. تأكد من الإنترنت.";
+          return "❌ مشكلة في الاتصال. تأكد من:\n• الإنترنت شغال\n• الـ API Key صحيح\n\nأو ارفع على Vercel للأداء الأفضل";
         }
       }
 
