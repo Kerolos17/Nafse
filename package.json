@@ -1,0 +1,17 @@
+{
+  "name": "nafis-ai",
+  "version": "1.0.0",
+  "description": "90-day habit tracker with AI assistant",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "habit-tracker",
+    "ai",
+    "productivity"
+  ],
+  "author": "",
+  "license": "MIT"
+}
