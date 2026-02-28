@@ -2,1378 +2,622 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نافس | خطتك في 90 يوم</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: {
-        cairo: ['Cairo', 'sans-serif'],
-        tajawal: ['Tajawal', 'sans-serif'],
-      }
-    }
-  }
-}
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>نافس AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --surface2: #1a1a25;
-    --border: #2a2a3a;
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --gold: #f5c842;
-    --green: #36d399;
-    --text: #e8e8f0;
-    --muted: #6b6b85;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Grain texture */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
-  }
-
-  /* Glow orbs */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.12;
-  }
-
-  .nav-tab {
-    cursor: pointer;
-    padding: 10px 20px;
-    border-radius: 12px;
-    transition: all 0.3s;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--muted);
-    border: 1px solid transparent;
-  }
-  .nav-tab.active {
-    background: var(--surface2);
-    color: var(--text);
-    border-color: var(--border);
-  }
-  .nav-tab:hover:not(.active) { color: var(--text); }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
-  .card:hover { border-color: #3a3a55; }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(108,99,255,0.03) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 12px 28px;
-    font-family: 'Cairo', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 20px rgba(108,99,255,0.3);
-  }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(108,99,255,0.5);
-  }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-family: 'Cairo', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .btn-ghost:hover { color: var(--text); border-color: #3a3a55; }
-
-  .progress-ring {
-    transform: rotate(-90deg);
-  }
-  .progress-ring-circle {
-    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    stroke-linecap: round;
-  }
-
-  .habit-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-    user-select: none;
-  }
-  .habit-item:hover { border-color: #3a3a55; }
-  .habit-item.done {
-    border-color: rgba(54,211,153,0.3);
-    background: rgba(54,211,153,0.05);
-  }
-
-  .habit-check {
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-    border: 2px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.3s;
-    font-size: 14px;
-  }
-  .habit-item.done .habit-check {
-    background: var(--green);
-    border-color: var(--green);
-  }
-
-  .day-cell {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: var(--surface2);
-    color: var(--muted);
-  }
-  .day-cell.today {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  .day-cell.done-day {
-    background: rgba(54,211,153,0.15);
-    border-color: rgba(54,211,153,0.4);
-    color: var(--green);
-  }
-  .day-cell.partial {
-    background: rgba(245,200,66,0.1);
-    border-color: rgba(245,200,66,0.3);
-    color: var(--gold);
-  }
-
-  .phase-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .streak-flame {
-    animation: flame 1.5s ease-in-out infinite alternate;
-  }
-  @keyframes flame {
-    from { transform: scale(1) rotate(-3deg); }
-    to { transform: scale(1.1) rotate(3deg); }
-  }
-
-  .stat-num {
-    font-family: 'Tajawal', sans-serif;
-    font-weight: 900;
-    font-size: 36px;
-    line-height: 1;
-  }
-
-  input, textarea, select {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--accent);
-  }
-  input::placeholder { color: var(--muted); }
-
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 32px;
-    width: 100%;
-    max-width: 480px;
-    position: relative;
-  }
-
-  .page { display: none; }
-  .page.active { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .page.active { animation: fadeIn 0.4s ease; }
-
-  .quote-card {
-    background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(139,92,246,0.05));
-    border: 1px solid rgba(108,99,255,0.2);
-    border-radius: 16px;
-    padding: 20px 24px;
-  }
-
-  .level-bar {
-    height: 6px;
-    background: var(--surface2);
-    border-radius: 100px;
-    overflow: hidden;
-  }
-  .level-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), #8b5cf6);
-    border-radius: 100px;
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .toggle-btn {
-    display: flex;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 4px;
-    gap: 4px;
-  }
-  .toggle-option {
-    padding: 8px 16px;
-    border-radius: 9px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    transition: all 0.2s;
-  }
-  .toggle-option.active {
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
+:root {
+  --bg:#0a0a0f;--surface:#111118;--surface2:#1a1a25;
+  --border:#2a2a3a;--accent:#6c63ff;--gold:#f5c842;
+  --green:#36d399;--red:#ff6584;--text:#e8e8f0;--muted:#6b6b85;
+  --nav-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:15px;}
+#app{display:flex;flex-direction:column;height:100dvh;}
+#topbar{flex-shrink:0;height:56px;background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:50;}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+#navbar{flex-shrink:0;height:var(--nav-h);background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:stretch;z-index:50;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--muted);font-size:10px;font-weight:700;transition:color 0.2s;border:none;background:transparent;padding:8px 4px;position:relative;font-family:'Cairo',sans-serif;}
+.nav-item .icon{font-size:22px;line-height:1;}
+.nav-item.active{color:var(--accent);}
+.nav-item.active::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--accent);border-radius:0 0 4px 4px;}
+.page{display:none;padding:16px;}
+.page.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(108,99,255,0.04),transparent 60%);pointer-events:none;}
+.btn{border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#8b5cf6);color:white;padding:13px 20px;font-size:15px;width:100%;box-shadow:0 4px 16px rgba(108,99,255,0.35);}
+.btn-primary:active{transform:scale(0.97);}
+.btn-primary:disabled{opacity:0.5;}
+.btn-sm{background:var(--surface2);color:var(--muted);border:1px solid var(--border);padding:7px 14px;font-size:12px;}
+.btn-sm:active{background:var(--border);}
+.btn-icon{background:var(--surface2);border:1px solid var(--border);padding:8px 14px;font-size:16px;color:var(--text);}
+input,textarea,select{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px 14px;font-family:'Cairo',sans-serif;font-size:14px;width:100%;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+input:focus,textarea:focus{border-color:var(--accent);}
+input::placeholder,textarea::placeholder{color:var(--muted);}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 12px;text-align:center;}
+.stat-num{font-family:'Tajawal',sans-serif;font-weight:900;font-size:28px;line-height:1;}
+.stat-label{font-size:11px;color:var(--muted);margin-top:3px;}
+.ring-wrap{position:relative;display:inline-block;}
+.ring-svg{transform:rotate(-90deg);}
+.ring-circle{transition:stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1);stroke-linecap:round;}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.lbar{height:5px;background:var(--surface2);border-radius:100px;overflow:hidden;margin-top:8px;}
+.lbar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#8b5cf6);border-radius:100px;transition:width 0.8s ease;}
+.habit-row{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:13px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;user-select:none;-webkit-user-select:none;}
+.habit-row.done{border-color:rgba(54,211,153,0.35);background:rgba(54,211,153,0.06);}
+.habit-check{width:26px;height:26px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.25s;font-size:13px;}
+.habit-row.done .habit-check{background:var(--green);border-color:var(--green);}
+.mood-row{display:flex;gap:8px;justify-content:space-between;}
+.mood-btn{flex:1;font-size:24px;padding:10px 4px;border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center;border:1px solid transparent;background:var(--surface2);}
+.mood-btn.selected{border-color:var(--accent);background:rgba(108,99,255,0.12);transform:scale(1.08);}
+#chatMsgs{display:flex;flex-direction:column;gap:10px;padding:12px 12px 4px;}
+.bubble{max-width:88%;padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.75;word-break:break-word;animation:bubIn 0.25s ease;}
+@keyframes bubIn{from{opacity:0;transform:scale(0.95) translateY(6px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.bubble.ai{background:var(--surface2);border:1px solid var(--border);border-bottom-right-radius:4px;align-self:flex-end;}
+.bubble.user{background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;border-bottom-left-radius:4px;align-self:flex-start;}
+.typing-dots{display:inline-flex;gap:4px;padding:4px 0;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite;}
+.dot:nth-child(2){animation-delay:0.2s;}.dot:nth-child(3){animation-delay:0.4s;}
+@keyframes blink{0%,60%,100%{opacity:0.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-5px);}}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:0 12px 10px;-ms-overflow-style:none;scrollbar-width:none;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:7px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.chip:active{background:rgba(108,99,255,0.15);border-color:var(--accent);color:var(--accent);}
+.cal-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;}
+.cal-cell{aspect-ratio:1;border-radius:6px;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--muted);}
+.cal-cell.today{border-color:var(--accent);color:var(--accent);}
+.cal-cell.done{background:rgba(54,211,153,0.18);border-color:rgba(54,211,153,0.45);color:var(--green);}
+.cal-cell.partial{background:rgba(245,200,66,0.12);border-color:rgba(245,200,66,0.35);color:var(--gold);}
+.cal-cell.future{opacity:0.3;}
+.sec-title{font-weight:700;font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.day-badge{font-family:'Tajawal',sans-serif;font-size:13px;color:var(--accent);font-weight:900;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.25);border-radius:8px;padding:2px 10px;}
+#toast{position:fixed;bottom:calc(var(--nav-h)+12px);left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:11px 20px;font-size:13px;font-weight:700;z-index:9999;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 24px rgba(0,0,0,0.5);white-space:nowrap;}
+#content::-webkit-scrollbar{width:3px;}
+#content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.timer-big{font-family:'Tajawal',sans-serif;font-size:48px;font-weight:900;color:var(--accent);text-align:center;letter-spacing:2px;}
+.api-notice{background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.7;color:var(--muted);margin-top:8px;}
+@keyframes flame{from{transform:scale(1) rotate(-2deg);}to{transform:scale(1.1) rotate(2deg);}}
+.flame{display:inline-block;animation:flame 1.5s ease-in-out infinite alternate;}
+#setup{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+#setup .si{width:100%;max-width:400px;}
 </style>
 </head>
 <body>
 
-<!-- Glow orbs -->
-<div class="orb" style="width:500px;height:500px;background:var(--accent);top:-200px;right:-100px;"></div>
-<div class="orb" style="width:400px;height:400px;background:var(--accent2);bottom:-150px;left:-100px;"></div>
-
-<!-- Setup Screen -->
-<div id="setupScreen" class="min-h-screen flex items-center justify-center p-6" style="position:relative;z-index:1;">
-  <div class="w-full max-w-lg">
-    <div class="text-center mb-10">
-      <div style="font-size:48px;margin-bottom:16px;">🎯</div>
-      <h1 class="text-4xl font-black mb-3" style="font-family:'Tajawal',sans-serif;">نافس</h1>
-      <p class="text-lg" style="color:var(--muted);">خطتك في 90 يوم — تبدأ من هنا</p>
+<!-- SETUP -->
+<div id="setup">
+  <div class="si">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:48px;margin-bottom:8px;">🧠</div>
+      <h1 style="font-family:'Tajawal',sans-serif;font-size:32px;font-weight:900;">نافس <span style="color:var(--accent);">AI</span></h1>
+      <p style="color:var(--muted);margin-top:4px;font-size:14px;">مساعدك الذكي في رحلة الـ 90 يوم</p>
     </div>
-
-    <div class="card mb-6">
-      <h2 class="text-xl font-bold mb-6">ابدأ رحلتك 🚀</h2>
-      
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2" style="color:var(--muted);">اسمك</label>
-        <input type="text" id="setupName" placeholder="مثلاً: أحمد" />
+    <div class="card">
+      <div class="sec-title" style="margin-bottom:16px;">ابدأ رحلتك 🚀</div>
+      <div style="margin-bottom:12px;"><label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;">اسمك</label><input type="text" id="sName" placeholder="مثلاً: أحمد"/></div>
+      <div style="margin-bottom:12px;"><label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;">هدفك الرئيسي</label><input type="text" id="sGoal" placeholder="مثلاً: WordPress Developer محترف"/></div>
+      <div style="margin-bottom:12px;"><label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;">تاريخ البداية</label><input type="date" id="sDate"/></div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;">🔑 Anthropic API Key <span style="font-weight:400;opacity:0.7;">(للـ AI — اختياري)</span></label>
+        <input type="password" id="sApiKey" placeholder="sk-ant-api03-..."/>
+        <div class="api-notice">🔒 محفوظ على جهازك بس ومش بيتبعت لأي مكان.<br>جيب الـ Key من: <strong style="color:var(--accent);">console.anthropic.com</strong> ← API Keys<br>لو مش عندك Key، الـ App هيشتغل بدون AI.</div>
       </div>
-
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2" style="color:var(--muted);">هدفك الرئيسي في 90 يوم</label>
-        <input type="text" id="setupGoal" placeholder="مثلاً: WordPress Developer محترف" />
-      </div>
-
-      <div class="mb-6">
-        <label class="block text-sm font-semibold mb-2" style="color:var(--muted);">تاريخ البداية</label>
-        <input type="date" id="setupDate" />
-      </div>
-
-      <button class="btn-primary w-full text-lg py-4" onclick="startJourney()">
-        ابدأ رحلة 90 يوم 🔥
-      </button>
+      <button class="btn btn-primary" onclick="startJourney()">ابدأ الرحلة 🔥</button>
     </div>
-
-    <p class="text-center text-sm" style="color:var(--muted);">كل بياناتك محفوظة على جهازك فقط 🔒</p>
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px;">كل بياناتك محفوظة على جهازك فقط 🔒</p>
   </div>
 </div>
 
-<!-- Main App -->
-<div id="mainApp" style="display:none;position:relative;z-index:1;">
-  
-  <!-- Header -->
-  <header style="background:rgba(10,10,15,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span style="font-size:24px;">🎯</span>
-        <span class="text-xl font-black" style="font-family:'Tajawal',sans-serif;">نافس</span>
-      </div>
-      
-      <nav class="flex items-center gap-2">
-        <div class="nav-tab active" onclick="showPage('dashboard')" id="tab-dashboard">📊 الرئيسية</div>
-        <div class="nav-tab" onclick="showPage('today')" id="tab-today">☀️ اليوم</div>
-        <div class="nav-tab" onclick="showPage('plan')" id="tab-plan">📋 الخطة</div>
-        <div class="nav-tab" onclick="showPage('progress')" id="tab-progress">📈 التقدم</div>
-      </nav>
-
-      <div class="flex items-center gap-3">
-        <div class="streak-flame" style="font-size:20px;">🔥</div>
-        <span id="headerStreak" class="font-black" style="font-family:'Tajawal',sans-serif;color:var(--gold);font-size:18px;">0</span>
-        <div style="width:1px;height:24px;background:var(--border);"></div>
-        <span id="headerName" class="font-semibold text-sm" style="color:var(--muted);"></span>
-      </div>
+<!-- MAIN APP -->
+<div id="app" style="display:none;">
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:20px;">🧠</span>
+      <span style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:18px;">نافس <span style="color:var(--accent);">AI</span></span>
     </div>
-  </header>
-
-  <div class="max-w-6xl mx-auto px-6 py-8">
-
-    <!-- DASHBOARD PAGE -->
-    <div id="page-dashboard" class="page active">
-      
-      <!-- Welcome + Quote -->
-      <div class="mb-8">
-        <div class="flex items-center justify-between mb-2">
-          <div>
-            <p class="text-sm font-semibold" style="color:var(--muted);" id="greetingText">صباح النور 👋</p>
-            <h1 class="text-3xl font-black" style="font-family:'Tajawal',sans-serif;" id="dashWelcome">أهلاً يا بطل</h1>
-          </div>
-          <div style="text-align:left;">
-            <p class="text-sm" style="color:var(--muted);">اليوم رقم</p>
-            <p class="text-4xl font-black" style="font-family:'Tajawal',sans-serif;color:var(--accent);" id="dayNumber">1</p>
-            <p class="text-xs" style="color:var(--muted);">من 90</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stats Row -->
-      <div class="grid grid-cols-4 gap-4 mb-8">
-        <div class="card text-center">
-          <div class="stat-num" style="color:var(--accent);" id="statStreak">0</div>
-          <div class="text-sm mt-1" style="color:var(--muted);">🔥 يوم متتالي</div>
-        </div>
-        <div class="card text-center">
-          <div class="stat-num" style="color:var(--green);" id="statDone">0</div>
-          <div class="text-sm mt-1" style="color:var(--muted);">✅ أيام مكتملة</div>
-        </div>
-        <div class="card text-center">
-          <div class="stat-num" style="color:var(--gold);" id="statPercent">0%</div>
-          <div class="text-sm mt-1" style="color:var(--muted);">📊 نسبة الإنجاز</div>
-        </div>
-        <div class="card text-center">
-          <div class="stat-num" style="color:var(--accent2);" id="statRemain">90</div>
-          <div class="text-sm mt-1" style="color:var(--muted);">📅 يوم متبقي</div>
-        </div>
-      </div>
-
-      <!-- Main Content -->
-      <div class="grid grid-cols-3 gap-6">
-        
-        <!-- Progress Ring + Today Quick -->
-        <div class="col-span-1">
-          <div class="card mb-4 flex flex-col items-center">
-            <p class="font-bold mb-4">تقدم اليوم</p>
-            <div style="position:relative;width:140px;height:140px;">
-              <svg width="140" height="140" class="progress-ring">
-                <circle cx="70" cy="70" r="56" fill="none" stroke="var(--surface2)" stroke-width="12"/>
-                <circle id="todayRing" cx="70" cy="70" r="56" fill="none" stroke="var(--green)" stroke-width="12"
-                  stroke-dasharray="352" stroke-dashoffset="352" class="progress-ring-circle"/>
-              </svg>
-              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                <span class="text-3xl font-black" style="font-family:'Tajawal',sans-serif;" id="todayPercent">0%</span>
-                <span class="text-xs" style="color:var(--muted);">مكتمل</span>
-              </div>
-            </div>
-            <button class="btn-primary mt-4 w-full text-sm py-3" onclick="showPage('today')">
-              سجّل يومك ☀️
-            </button>
-          </div>
-
-          <!-- Phase indicator -->
-          <div class="card">
-            <p class="font-bold mb-3 text-sm">المرحلة الحالية 📚</p>
-            <div id="currentPhase">
-              <div class="phase-badge mb-2" style="background:rgba(108,99,255,0.1);color:var(--accent);">
-                <span>🌱</span> <span id="phaseName">المرحلة 1</span>
-              </div>
-              <p class="text-xs" style="color:var(--muted);" id="phaseDesc">PHP + WordPress Core + Hooks</p>
-              <div class="level-bar mt-3">
-                <div class="level-fill" id="phaseBar" style="width:0%"></div>
-              </div>
-              <p class="text-xs mt-1" style="color:var(--muted);" id="phaseProgress">0 / 30 يوم</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- This week calendar -->
-        <div class="col-span-2">
-          <div class="card mb-4">
-            <div class="flex items-center justify-between mb-4">
-              <p class="font-bold">90 يوم — نظرة عامة</p>
-              <div class="toggle-btn">
-                <div class="toggle-option active" onclick="switchView('week')" id="viewWeek">أسبوع</div>
-                <div class="toggle-option" onclick="switchView('full')" id="viewFull">كل الأيام</div>
-              </div>
-            </div>
-            <div id="calendarGrid" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-          </div>
-
-          <!-- Quote -->
-          <div class="quote-card">
-            <p class="text-xs font-semibold mb-2" style="color:var(--accent);">💡 كلمة اليوم</p>
-            <p class="font-semibold" id="dailyQuote" style="line-height:1.8;">خلي مجالك يبقى أعمق بدل ما يبقى أوسع</p>
-          </div>
-        </div>
-
-      </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="flame">🔥</span>
+      <span id="hStreak" style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:18px;color:var(--gold);">0</span>
+      <span id="hName" style="font-size:12px;color:var(--muted);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
     </div>
+  </div>
 
-    <!-- TODAY PAGE -->
-    <div id="page-today" class="page">
-      <div class="flex items-center justify-between mb-8">
+  <div id="content">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div>
-          <h1 class="text-3xl font-black" style="font-family:'Tajawal',sans-serif;">☀️ يوم النهارده</h1>
-          <p class="text-sm mt-1" style="color:var(--muted);" id="todayDate">الجمعة، 27 فبراير 2026</p>
+          <p style="font-size:12px;color:var(--muted);" id="greet">صباح النور 👋</p>
+          <p style="font-size:20px;font-weight:900;font-family:'Tajawal',sans-serif;" id="welcomeMsg">أهلاً يا بطل</p>
         </div>
-        <div class="text-left">
-          <p class="text-xs" style="color:var(--muted);">اليوم رقم</p>
-          <p class="text-4xl font-black" style="font-family:'Tajawal',sans-serif;color:var(--accent);" id="todayDayNum">-</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-6">
-        <!-- Habits -->
-        <div>
-          <div class="card">
-            <div class="flex items-center justify-between mb-5">
-              <h2 class="font-bold text-lg">✅ المهام اليومية</h2>
-              <span class="text-sm font-bold" style="color:var(--green);" id="habitsCount">0/0</span>
-            </div>
-            <div id="habitsList" class="flex flex-col gap-3"></div>
-            <button class="btn-ghost w-full mt-4 text-sm" onclick="openAddHabit()">+ أضف مهمة</button>
-          </div>
-        </div>
-
-        <!-- Notes + Mood -->
-        <div class="flex flex-col gap-4">
-          <!-- Mood -->
-          <div class="card">
-            <h2 class="font-bold mb-4">😊 كيف حالك النهارده؟</h2>
-            <div class="flex gap-3 justify-center">
-              <div class="mood-btn text-3xl cursor-pointer transition-all hover:scale-125 p-2 rounded-xl" onclick="setMood('😴', this)" style="font-size:28px;">😴</div>
-              <div class="mood-btn text-3xl cursor-pointer transition-all hover:scale-125 p-2 rounded-xl" onclick="setMood('😐', this)">😐</div>
-              <div class="mood-btn text-3xl cursor-pointer transition-all hover:scale-125 p-2 rounded-xl" onclick="setMood('🙂', this)">🙂</div>
-              <div class="mood-btn text-3xl cursor-pointer transition-all hover:scale-125 p-2 rounded-xl" onclick="setMood('💪', this)">💪</div>
-              <div class="mood-btn text-3xl cursor-pointer transition-all hover:scale-125 p-2 rounded-xl" onclick="setMood('🔥', this)">🔥</div>
-            </div>
-          </div>
-
-          <!-- Study Note -->
-          <div class="card flex-1">
-            <h2 class="font-bold mb-4">📝 اتعلمت إيه النهارده؟</h2>
-            <textarea id="todayNote" placeholder="اكتب أهم حاجة اتعلمتها أو عملتها..." 
-              style="resize:none;min-height:100px;width:100%;" oninput="saveTodayNote()"></textarea>
-            <button class="btn-primary w-full mt-3 text-sm py-3" onclick="saveDay()">
-              💾 احفظ يومك
-            </button>
-          </div>
-
-          <!-- Session timer -->
-          <div class="card text-center">
-            <h2 class="font-bold mb-3">⏱️ مؤقت المذاكرة</h2>
-            <div class="text-5xl font-black mb-4" style="font-family:'Tajawal',sans-serif;color:var(--accent);" id="timerDisplay">90:00</div>
-            <div class="flex gap-2 justify-center">
-              <select id="timerSelect" style="width:auto;padding:8px 12px;font-size:13px;" onchange="setTimer()">
-                <option value="90">90 دقيقة</option>
-                <option value="60">60 دقيقة</option>
-                <option value="45">45 دقيقة</option>
-                <option value="25">25 دقيقة (Pomodoro)</option>
-              </select>
-              <button class="btn-primary py-2 px-4 text-sm" id="timerBtn" onclick="toggleTimer()">▶ ابدأ</button>
-              <button class="btn-ghost py-2 px-4 text-sm" onclick="resetTimer()">↺</button>
-            </div>
-          </div>
+        <div style="text-align:left;">
+          <p style="font-size:10px;color:var(--muted);">اليوم</p>
+          <p style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:32px;color:var(--accent);line-height:1;" id="dayNum">1</p>
+          <p style="font-size:10px;color:var(--muted);">من 90</p>
         </div>
       </div>
-    </div>
-
-    <!-- PLAN PAGE -->
-    <div id="page-plan" class="page">
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h1 class="text-3xl font-black" style="font-family:'Tajawal',sans-serif;">📋 الخطة الكاملة</h1>
-          <p class="text-sm mt-1" style="color:var(--muted);">90 يوم — 3 مراحل</p>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" style="color:var(--accent);" id="sStreak">0</div><div class="stat-label">🔥 streak</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--green);" id="sDone">0</div><div class="stat-label">✅ أيام مكتملة</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--gold);" id="sPct">0%</div><div class="stat-label">📊 إنجاز عام</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--red);" id="sRemain">90</div><div class="stat-label">📅 يوم متبقي</div></div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:16px;">
+        <div class="ring-wrap">
+          <svg width="80" height="80" class="ring-svg">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface2)" stroke-width="8"/>
+            <circle id="todayRing" cx="40" cy="40" r="32" fill="none" stroke="var(--green)" stroke-width="8" stroke-dasharray="201" stroke-dashoffset="201" class="ring-circle"/>
+          </svg>
+          <div class="ring-label"><span style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:16px;" id="todayPct">0%</span></div>
+        </div>
+        <div style="flex:1;">
+          <p style="font-size:12px;color:var(--muted);">تقدم اليوم</p>
+          <p style="font-weight:700;font-size:14px;margin:4px 0;" id="phName">المرحلة 1</p>
+          <p style="font-size:11px;color:var(--muted);" id="phDesc">PHP + WordPress Core</p>
+          <div class="lbar"><div class="lbar-fill" id="phBar" style="width:0%"></div></div>
+          <p style="font-size:10px;color:var(--muted);margin-top:4px;" id="phProg">0 / 30 يوم</p>
         </div>
       </div>
-
-      <div class="grid grid-cols-3 gap-6 mb-8">
-        <!-- Phase 1 -->
-        <div class="card">
-          <div class="phase-badge mb-3" style="background:rgba(108,99,255,0.1);color:var(--accent);">🌱 المرحلة 1 — يوم 1-30</div>
-          <h3 class="font-bold text-lg mb-3">الأساسيات</h3>
-          <div class="flex flex-col gap-2" id="phase1Topics">
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>📚</span> PHP Fundamentals
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🔧</span> WordPress Core
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🎨</span> Theme Hierarchy
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🪝</span> Hooks & Filters
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🛠️</span> Custom Theme بإيدك
-            </div>
-          </div>
-          <div class="level-bar mt-4">
-            <div class="level-fill" id="phase1Bar" style="width:0%;"></div>
-          </div>
-          <p class="text-xs mt-2" style="color:var(--muted);" id="phase1Prog">0 / 30 يوم</p>
+      <div class="card" style="border-color:rgba(108,99,255,0.25);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">🤖</span><span style="font-weight:700;font-size:13px;">تحليل AI لأدائك</span></div>
+          <button class="btn btn-sm" onclick="genInsight()" id="insightBtn">تحليل</button>
         </div>
-
-        <!-- Phase 2 -->
-        <div class="card">
-          <div class="phase-badge mb-3" style="background:rgba(245,200,66,0.1);color:var(--gold);">⚡ المرحلة 2 — يوم 31-60</div>
-          <h3 class="font-bold text-lg mb-3">التطوير</h3>
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🛒</span> WooCommerce Customization
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>📦</span> Custom Post Types
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🔌</span> REST API
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>⚡</span> Speed Optimization
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🔒</span> Security
-            </div>
-          </div>
-          <div class="level-bar mt-4">
-            <div class="level-fill" id="phase2Bar" style="width:0%;background:linear-gradient(90deg,var(--gold),#f59e0b);"></div>
-          </div>
-          <p class="text-xs mt-2" style="color:var(--muted);" id="phase2Prog">0 / 30 يوم</p>
-        </div>
-
-        <!-- Phase 3 -->
-        <div class="card">
-          <div class="phase-badge mb-3" style="background:rgba(54,211,153,0.1);color:var(--green);">🏆 المرحلة 3 — يوم 61-90</div>
-          <h3 class="font-bold text-lg mb-3">الاحتراف</h3>
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>💼</span> Portfolio Project
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>📊</span> Case Studies
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🎤</span> عرض الشغل
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>💰</span> Freelance / Job Ready
-            </div>
-            <div class="flex items-center gap-2 text-sm p-2 rounded-lg" style="background:var(--surface2);">
-              <span>🌟</span> SEO Technical
-            </div>
-          </div>
-          <div class="level-bar mt-4">
-            <div class="level-fill" id="phase3Bar" style="width:0%;background:linear-gradient(90deg,var(--green),#10b981);"></div>
-          </div>
-          <p class="text-xs mt-2" style="color:var(--muted);" id="phase3Prog">0 / 30 يوم</p>
-        </div>
+        <div id="insightTxt" style="font-size:13px;color:var(--muted);line-height:1.75;">اضغط "تحليل" عشان الـ AI يشوف بياناتك 💡</div>
       </div>
-
-      <!-- Weekly Schedule -->
       <div class="card">
-        <h2 class="font-bold text-xl mb-6">🗓️ جدول الأسبوع</h2>
-        <div class="grid grid-cols-7 gap-3">
-          <div class="text-center">
-            <div class="font-bold text-sm mb-2" style="color:var(--muted);">السبت</div>
-            <div style="background:rgba(54,211,153,0.1);border:1px solid rgba(54,211,153,0.2);border-radius:12px;padding:12px 8px;">
-              <div style="font-size:20px;">🏋️</div>
-              <div class="text-xs mt-1" style="color:var(--green);">جيم</div>
-              <div class="text-xs" style="color:var(--muted);">5:30-7م</div>
-              <div style="margin-top:6px;padding:6px;background:rgba(108,99,255,0.1);border-radius:8px;">
-                <div class="text-xs" style="color:var(--accent);">📚 مذاكرة</div>
-                <div class="text-xs" style="color:var(--muted);">8-9:30م</div>
-              </div>
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold text-sm mb-2" style="color:var(--muted);">الأحد</div>
-            <div style="background:rgba(54,211,153,0.1);border:1px solid rgba(54,211,153,0.2);border-radius:12px;padding:12px 8px;">
-              <div style="font-size:20px;">🏋️</div>
-              <div class="text-xs mt-1" style="color:var(--green);">جيم</div>
-              <div class="text-xs" style="color:var(--muted);">5:30-7م</div>
-              <div style="margin-top:6px;padding:6px;background:rgba(108,99,255,0.1);border-radius:8px;">
-                <div class="text-xs" style="color:var(--accent);">📚 مذاكرة</div>
-                <div class="text-xs" style="color:var(--muted);">8-9:30م</div>
-              </div>
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold text-sm mb-2" style="color:var(--muted);">الاثنين</div>
-            <div style="background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:12px 8px;">
-              <div style="font-size:20px;">🔥</div>
-              <div class="text-xs mt-1" style="color:var(--accent);">تطوير</div>
-              <div style="margin-top:6px;padding:6px;background:rgba(108,99,255,0.1);border-radius:8px;">
-                <div class="text-xs" style="color:var(--accent);">💻 3 ساعات</div>
-                <div class="text-xs" style="color:var(--muted);">6-9م</div>
-              </div>
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold text-sm mb-2" style="color:var(--muted);">الثلاثاء</div>
-            <div style="background:rgba(54,211,153,0.1);border:1px solid rgba(54,211,153,0.2);border-radius:12px;padding:12px 8px;">
-              <div style="font-size:20px;">🏋️</div>
-              <div class="text-xs mt-1" style="color:var(--green);">جيم</div>
-              <div class="text-xs" style="color:var(--muted);">5:30-7م</div>
-              <div style="margin-top:6px;padding:6px;background:rgba(108,99,255,0.1);border-radius:8px;">
-                <div class="text-xs" style="color:var(--accent);">📚 مذاكرة</div>
-                <div class="text-xs" style="color:var(--muted);">8-9:30م</div>
-              </div>
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold text-sm mb-2" style="color:var(--muted);">الأربعاء</div>
-            <div style="background:rgba(54,211,153,0.1);border:1px solid rgba(54,211,153,0.2);border-radius:12px;padding:12px 8px;">
-              <div style="font-size:20px;">🏋️</div>
-              <div class="text-xs mt-1" style="color:var(--green);">جيم</div>
-              <div class="text-xs" style="color:var(--muted);">5:30-7م</div>
-              <div style="margin-top:6px;padding:6px;background:rgba(108,99,255,0.1);border-radius:8px;">
-                <div class="text-xs" style="color:var(--accent);">📚 مذاكرة</div>
-                <div class="text-xs" style="color:var(--muted);">8-9:30م</div>
-              </div>
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold text-sm mb-2" style="color:var(--muted);">الخميس</div>
-            <div style="background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:12px 8px;">
-              <div style="font-size:20px;">🔥</div>
-              <div class="text-xs mt-1" style="color:var(--accent);">تطوير</div>
-              <div style="margin-top:6px;padding:6px;background:rgba(108,99,255,0.1);border-radius:8px;">
-                <div class="text-xs" style="color:var(--accent);">💻 3 ساعات</div>
-                <div class="text-xs" style="color:var(--muted);">6-9م</div>
-              </div>
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="font-bold text-sm mb-2" style="color:var(--gold);">الجمعة ⭐</div>
-            <div style="background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.2);border-radius:12px;padding:12px 8px;">
-              <div style="font-size:20px;">🚀</div>
-              <div class="text-xs mt-1" style="color:var(--gold);">Deep Work</div>
-              <div style="margin-top:6px;padding:6px;background:rgba(245,200,66,0.1);border-radius:8px;">
-                <div class="text-xs" style="color:var(--gold);">💡 مشروع كامل</div>
-                <div class="text-xs" style="color:var(--muted);">طول النهار</div>
-              </div>
-            </div>
-          </div>
+        <div class="sec-title">📅 الـ 90 يوم</div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div style="display:flex;gap:12px;margin-top:10px;">
+          <span style="font-size:10px;color:var(--green);">● مكتمل</span>
+          <span style="font-size:10px;color:var(--gold);">● جزئي</span>
+          <span style="font-size:10px;color:var(--muted);">● لم يُسجَّل</span>
         </div>
       </div>
     </div>
 
-    <!-- PROGRESS PAGE -->
-    <div id="page-progress" class="page">
-      <div class="flex items-center justify-between mb-8">
+    <!-- TODAY -->
+    <div class="page" id="page-today">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div>
-          <h1 class="text-3xl font-black" style="font-family:'Tajawal',sans-serif;">📈 رحلتك</h1>
-          <p class="text-sm mt-1" style="color:var(--muted);">كل يوم بتكتب تاريخك</p>
+          <p style="font-weight:900;font-size:20px;font-family:'Tajawal',sans-serif;">☀️ يوم النهارده</p>
+          <p style="font-size:12px;color:var(--muted);" id="todayDateTxt"></p>
         </div>
-        <button class="btn-ghost text-sm" onclick="exportData()">📤 تصدير البيانات</button>
+        <div class="day-badge" id="todayDayBadge">يوم 1</div>
       </div>
-
-      <!-- Big Stats -->
-      <div class="grid grid-cols-3 gap-4 mb-8">
-        <div class="card text-center" style="background:linear-gradient(135deg,rgba(108,99,255,0.1),transparent);">
-          <div class="text-5xl font-black mb-1" style="font-family:'Tajawal',sans-serif;color:var(--accent);" id="progTotal">0</div>
-          <div class="font-semibold" style="color:var(--muted);">إجمالي الأيام المسجلة</div>
-        </div>
-        <div class="card text-center" style="background:linear-gradient(135deg,rgba(54,211,153,0.1),transparent);">
-          <div class="text-5xl font-black mb-1" style="font-family:'Tajawal',sans-serif;color:var(--green);" id="progBest">0</div>
-          <div class="font-semibold" style="color:var(--muted);">أفضل streak 🔥</div>
-        </div>
-        <div class="card text-center" style="background:linear-gradient(135deg,rgba(245,200,66,0.1),transparent);">
-          <div class="text-5xl font-black mb-1" style="font-family:'Tajawal',sans-serif;color:var(--gold);" id="progAvg">0%</div>
-          <div class="font-semibold" style="color:var(--muted);">متوسط الإنجاز اليومي</div>
-        </div>
-      </div>
-
-      <!-- Calendar Full View -->
-      <div class="card mb-6">
-        <h2 class="font-bold text-lg mb-4">الـ 90 يوم بالتفصيل</h2>
-        <div id="fullCalendar" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-        <div class="flex items-center gap-6 mt-4">
-          <div class="flex items-center gap-2"><div style="width:14px;height:14px;border-radius:4px;background:rgba(54,211,153,0.3);border:1px solid rgba(54,211,153,0.5);"></div><span class="text-xs" style="color:var(--muted);">مكتمل</span></div>
-          <div class="flex items-center gap-2"><div style="width:14px;height:14px;border-radius:4px;background:rgba(245,200,66,0.2);border:1px solid rgba(245,200,66,0.4);"></div><span class="text-xs" style="color:var(--muted);">جزئي</span></div>
-          <div class="flex items-center gap-2"><div style="width:14px;height:14px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);"></div><span class="text-xs" style="color:var(--muted);">لم يُسجَّل</span></div>
-        </div>
-      </div>
-
-      <!-- Journal -->
       <div class="card">
-        <h2 class="font-bold text-lg mb-4">📓 آخر الملاحظات</h2>
-        <div id="journalList" class="flex flex-col gap-3"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="sec-title" style="margin-bottom:0;">✅ المهام</div>
+          <span style="font-size:13px;font-weight:700;color:var(--green);" id="habCount">0/0</span>
+        </div>
+        <div id="habList"></div>
+        <button class="btn btn-sm" style="width:100%;margin-top:8px;justify-content:center;" onclick="openSheet()">+ أضف مهمة</button>
+      </div>
+      <div class="card" style="border-color:rgba(108,99,255,0.2);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="sec-title" style="margin-bottom:0;">🎯 مهمة AI لليوم</div>
+          <button class="btn btn-sm" onclick="suggestTask()">اقترح</button>
+        </div>
+        <div id="taskSuggest" style="font-size:13px;color:var(--muted);line-height:1.75;">اضغط "اقترح" عشان الـ AI يحدد أهم مهمة تعملها النهارده</div>
+      </div>
+      <div class="card">
+        <div class="sec-title">😊 مزاجك إيه؟</div>
+        <div class="mood-row">
+          <div class="mood-btn" onclick="setMood('😴',this)">😴</div>
+          <div class="mood-btn" onclick="setMood('😐',this)">😐</div>
+          <div class="mood-btn" onclick="setMood('🙂',this)">🙂</div>
+          <div class="mood-btn" onclick="setMood('💪',this)">💪</div>
+          <div class="mood-btn" onclick="setMood('🔥',this)">🔥</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-title">📝 اتعلمت إيه؟</div>
+        <textarea id="noteArea" placeholder="اكتب أهم حاجة اتعلمتها أو عملتها..." style="resize:none;height:90px;" oninput="saveNote()"></textarea>
+        <button class="btn btn-primary" style="margin-top:10px;" onclick="saveDay()">💾 احفظ يومك</button>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="sec-title" style="justify-content:center;">⏱️ مؤقت المذاكرة</div>
+        <div class="timer-big" id="timerDisp">90:00</div>
+        <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;">
+          <select id="timerSel" style="width:auto;padding:8px 10px;font-size:13px;" onchange="resetTimer()">
+            <option value="90">90 دقيقة</option>
+            <option value="60">60 دقيقة</option>
+            <option value="45">45 دقيقة</option>
+            <option value="25">25 Pomodoro</option>
+          </select>
+          <button class="btn btn-icon" id="timerBtn" onclick="toggleTimer()">▶</button>
+          <button class="btn btn-icon" onclick="resetTimer()">↺</button>
+        </div>
       </div>
     </div>
 
-  </div>
-</div>
-
-<!-- Modals -->
-<div id="addHabitModal" class="modal-overlay" style="display:none;">
-  <div class="modal">
-    <h2 class="font-bold text-xl mb-6">+ مهمة جديدة</h2>
-    <div class="mb-4">
-      <label class="block text-sm font-semibold mb-2" style="color:var(--muted);">اسم المهمة</label>
-      <input type="text" id="newHabitName" placeholder="مثلاً: مذاكرة WordPress" />
-    </div>
-    <div class="mb-4">
-      <label class="block text-sm font-semibold mb-2" style="color:var(--muted);">الأيقونة</label>
-      <div class="flex gap-2 flex-wrap">
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">📚</span>
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">💻</span>
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">🏋️</span>
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">📖</span>
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">🎯</span>
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">⚡</span>
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">🔥</span>
-        <span class="text-2xl cursor-pointer p-2 rounded-lg hover:bg-white/10 emoji-pick" onclick="pickEmoji(this)">✍️</span>
+    <!-- AI CHAT -->
+    <div class="page" id="page-ai" style="padding:0;display:flex;flex-direction:column;height:calc(100dvh - 56px - 64px);">
+      <div id="chatMsgs" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;padding:12px 12px 4px;">
+        <div style="display:flex;justify-content:flex-end;">
+          <div class="bubble ai">
+            <strong style="color:var(--accent);">مرحباً! أنا نافس AI 🤖</strong><br>
+            بعرف خطتك وأداءك. اسألني أي حاجة — تحليل، نصيحة، أو تشجيع! 💪
+          </div>
+        </div>
       </div>
-      <input type="text" id="newHabitEmoji" placeholder="أو اكتب إيموجي هنا" style="margin-top:8px;" />
+      <div class="chips" style="padding-top:8px;flex-shrink:0;">
+        <div class="chip" onclick="qp('حلل أدائي الأسبوع ده')">📊 حلل الأسبوع</div>
+        <div class="chip" onclick="qp('إيه المهمة الأهم النهارده؟')">🎯 مهمة اليوم</div>
+        <div class="chip" onclick="qp('خايف أفقد الـ streak، ساعدني')">😟 streak في خطر</div>
+        <div class="chip" onclick="qp('قيّم تقدمي بصراحة')">🔍 قيّم تقدمي</div>
+        <div class="chip" onclick="qp('اعملي خطة مذاكرة للأسبوع الجاي')">📅 خطة الأسبوع</div>
+        <div class="chip" onclick="qp('إيه نقاط ضعفي؟')">⚠️ نقاط الضعف</div>
+      </div>
+      <div style="padding:8px 12px 12px;display:flex;gap:8px;border-top:1px solid var(--border);flex-shrink:0;">
+        <input type="text" id="chatIn" placeholder="اسأل أي حاجة..." style="flex:1;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"/>
+        <button class="btn btn-icon" onclick="sendMsg()" id="sendBtn" style="flex-shrink:0;font-size:18px;">↑</button>
+      </div>
     </div>
-    <div class="flex gap-3">
-      <button class="btn-primary flex-1" onclick="addHabit()">إضافة</button>
-      <button class="btn-ghost flex-1" onclick="closeModal('addHabitModal')">إلغاء</button>
+
+    <!-- PROGRESS -->
+    <div class="page" id="page-progress">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <p style="font-weight:900;font-size:20px;font-family:'Tajawal',sans-serif;">📈 رحلتك</p>
+        <button class="btn btn-sm" onclick="exportData()">📤 تصدير</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" style="color:var(--accent);" id="pTotal">0</div><div class="stat-label">أيام مسجلة</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--green);" id="pBest">0</div><div class="stat-label">أفضل streak 🔥</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--gold);" id="pAvg">0%</div><div class="stat-label">متوسط يومي</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--red);" id="pRemain2">90</div><div class="stat-label">يوم متبقي</div></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">الـ 90 يوم كاملة</div>
+        <div class="cal-grid" id="fullCal"></div>
+      </div>
+      <div class="card" style="border-color:rgba(108,99,255,0.25);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:8px;"><span>📊</span><span style="font-weight:700;font-size:13px;">تقرير AI الأسبوعي</span></div>
+          <button class="btn btn-sm" onclick="weeklyReport()" id="reportBtn">اعمل تقرير</button>
+        </div>
+        <div id="reportTxt" style="font-size:13px;color:var(--muted);line-height:1.75;">اضغط عشان الـ AI يعملك تقرير شامل</div>
+      </div>
+      <div class="card">
+        <div class="sec-title">📓 ملاحظاتك الأخيرة</div>
+        <div id="journal"></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">⚙️ الإعدادات</div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">🔑 API Key</label>
+          <input type="password" id="newApiKey" placeholder="sk-ant-..."/>
+          <button class="btn btn-sm" style="margin-top:8px;width:100%;justify-content:center;" onclick="saveApiKey()">حفظ الـ Key</button>
+        </div>
+        <button class="btn btn-sm" style="width:100%;justify-content:center;color:var(--red);border-color:rgba(255,101,132,0.3);" onclick="resetApp()">🗑️ بدء من جديد</button>
+      </div>
     </div>
+
+  </div><!-- /content -->
+
+  <div id="navbar">
+    <button class="nav-item active" onclick="goPage('home')" id="nav-home"><span class="icon">🏠</span><span>الرئيسية</span></button>
+    <button class="nav-item" onclick="goPage('today')" id="nav-today"><span class="icon">☀️</span><span>اليوم</span></button>
+    <button class="nav-item" onclick="goPage('ai')" id="nav-ai"><span class="icon">🤖</span><span>AI</span></button>
+    <button class="nav-item" onclick="goPage('progress')" id="nav-progress"><span class="icon">📈</span><span>التقدم</span></button>
   </div>
 </div>
 
-<!-- Toast -->
-<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 24px;font-weight:600;font-size:14px;z-index:200;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 32px rgba(0,0,0,0.4);">
-  ✅ تم الحفظ
+<!-- Habit Sheet -->
+<div id="habitSheet" style="display:none;position:fixed;inset:0;z-index:150;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);" onclick="closeSheet()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom));">
+    <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;"></div>
+    <div class="sec-title">+ مهمة جديدة</div>
+    <div style="margin-bottom:10px;"><input type="text" id="hName" placeholder="اسم المهمة"/></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <span style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;" onclick="pEmoji(this)">📚</span>
+      <span style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;" onclick="pEmoji(this)">💻</span>
+      <span style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;" onclick="pEmoji(this)">🏋️</span>
+      <span style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;" onclick="pEmoji(this)">📖</span>
+      <span style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;" onclick="pEmoji(this)">🎯</span>
+      <span style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;" onclick="pEmoji(this)">⚡</span>
+      <span style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;" onclick="pEmoji(this)">🔥</span>
+    </div>
+    <div style="margin-bottom:14px;"><input type="text" id="hEmoji" placeholder="أو اكتب إيموجي"/></div>
+    <button class="btn btn-primary" onclick="addHabit()">إضافة</button>
+  </div>
 </div>
+
+<div id="toast">✅ تم</div>
 
 <script>
-// ==================== STATE ====================
-let state = {
-  user: null,
-  startDate: null,
-  habits: [],
-  days: {}, // { "2024-01-01": { habits: {id: true/false}, note: "", mood: "" } }
-  settings: {}
-};
+let S={user:null,startDate:null,habits:[],days:{},apiKey:''};
+let timerSec=90*60,timerOn=false,timerIv=null,selEmoji='📚',chatHist=[];
 
-const QUOTES = [
-  "خلي مجالك يبقى أعمق بدل ما يبقى أوسع",
-  "90 يوم. نفس النظام. بدون إضافات.",
-  "التحسين بيجي من الثبات مش من الكمال",
-  "كل يوم بتضيف لبنة في صرح ضخم",
-  "الاستمرارية تكسب دايماً",
-  "مش محتاج تتحول لشخص مختلف. بس ابطل تضغط نفسك",
-  "شغل يومي + تطوير مسائي + جيم منتظم = تقدم ثابت",
-  "العمق قبل الاتساع",
-  "المعادلة بسيطة: افعل، لا تفكر كتير",
-  "كل يوم بتصحى وبتكمل، ده نجاح",
-  "الـ Overthinking عدوك الأول",
-  "اعمل شيء صغير كل يوم وابقى ثابت عليه"
-];
+function init(){
+  const d=localStorage.getItem('nafis_v3');
+  if(d){S=JSON.parse(d);launch();}
+  else{document.getElementById('sDate').value=tKey();document.getElementById('setup').style.display='flex';}
+}
 
-let timerInterval = null;
-let timerSeconds = 90 * 60;
-let timerRunning = false;
-let selectedEmoji = '📚';
-let currentView = 'week';
+function save(){localStorage.setItem('nafis_v3',JSON.stringify(S));}
 
-// ==================== INIT ====================
-function init() {
-  const saved = localStorage.getItem('nafis_data');
-  if (saved) {
-    state = JSON.parse(saved);
-    showApp();
-  } else {
-    // Set today as default date
-    document.getElementById('setupDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('setupScreen').style.display = 'flex';
+function startJourney(){
+  const n=document.getElementById('sName').value.trim();
+  const g=document.getElementById('sGoal').value.trim();
+  const d=document.getElementById('sDate').value;
+  const k=document.getElementById('sApiKey').value.trim();
+  if(!n||!g||!d){toast('⚠️ اكمل كل البيانات');return;}
+  S={user:{name:n,goal:g},startDate:d,apiKey:k,
+    habits:[
+      {id:1,name:'مذاكرة WordPress',emoji:'📚',active:true},
+      {id:2,name:'تطبيق عملي',emoji:'💻',active:true},
+      {id:3,name:'الجيم',emoji:'🏋️',active:true},
+      {id:4,name:'قراءة Documentation',emoji:'📖',active:true}
+    ],days:{}};
+  save();document.getElementById('setup').style.display='none';launch();
+}
+
+function launch(){document.getElementById('app').style.display='flex';document.getElementById('setup').style.display='none';updateAll();}
+
+function tKey(){return new Date().toISOString().split('T')[0];}
+
+function dayN(){
+  if(!S.startDate)return 1;
+  const s=new Date(S.startDate);s.setHours(0,0,0,0);
+  const t=new Date();t.setHours(0,0,0,0);
+  return Math.max(1,Math.floor((t-s)/86400000)+1);
+}
+
+function getDd(k){if(!S.days[k])S.days[k]={habits:{},note:'',mood:''};return S.days[k];}
+
+function todayPct(){
+  const d=getDd(tKey());
+  const total=S.habits.filter(h=>h.active).length;
+  if(!total)return 0;
+  return Math.round(Object.values(d.habits).filter(Boolean).length/total*100);
+}
+
+function streak(){
+  const today=new Date();today.setHours(0,0,0,0);
+  let s=0;
+  for(let i=0;i<90;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const k=d.toISOString().split('T')[0];
+    const data=S.days[k];
+    if(data){const total=S.habits.filter(h=>h.active).length;const done=Object.values(data.habits).filter(Boolean).length;if(total>0&&done/total>=0.5)s++;else if(i>0)break;}
+    else if(i>0)break;
   }
+  return s;
 }
 
-function save() {
-  localStorage.setItem('nafis_data', JSON.stringify(state));
-}
-
-function startJourney() {
-  const name = document.getElementById('setupName').value.trim();
-  const goal = document.getElementById('setupGoal').value.trim();
-  const date = document.getElementById('setupDate').value;
-  
-  if (!name || !goal || !date) {
-    showToast('⚠️ اكمل كل البيانات الأول');
-    return;
-  }
-
-  state.user = { name, goal };
-  state.startDate = date;
-  state.habits = [
-    { id: 1, name: 'مذاكرة WordPress', emoji: '📚', active: true },
-    { id: 2, name: 'تطبيق عملي', emoji: '💻', active: true },
-    { id: 3, name: 'الجيم', emoji: '🏋️', active: true },
-    { id: 4, name: 'قراءة Documentation', emoji: '📖', active: true },
-  ];
-  state.days = {};
-
-  save();
-  document.getElementById('setupScreen').style.display = 'none';
-  showApp();
-}
-
-function showApp() {
-  document.getElementById('mainApp').style.display = 'block';
-  document.getElementById('setupScreen').style.display = 'none';
-  updateAll();
-}
-
-// ==================== NAVIGATION ====================
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('tab-' + page).classList.add('active');
-  
-  if (page === 'today') renderToday();
-  if (page === 'progress') renderProgress();
-  if (page === 'dashboard') updateDashboard();
-}
-
-// ==================== CORE FUNCTIONS ====================
-function getDayNumber() {
-  if (!state.startDate) return 1;
-  const start = new Date(state.startDate);
-  const today = new Date();
-  start.setHours(0,0,0,0);
-  today.setHours(0,0,0,0);
-  return Math.max(1, Math.floor((today - start) / 86400000) + 1);
-}
-
-function getTodayKey() {
-  return new Date().toISOString().split('T')[0];
-}
-
-function getDayData(key) {
-  if (!state.days[key]) {
-    state.days[key] = { habits: {}, note: '', mood: '' };
-  }
-  return state.days[key];
-}
-
-function getTodayCompletion() {
-  const key = getTodayKey();
-  const data = getDayData(key);
-  const total = state.habits.filter(h => h.active).length;
-  if (total === 0) return 0;
-  const done = Object.values(data.habits).filter(Boolean).length;
-  return Math.round((done / total) * 100);
-}
-
-function calculateStreak() {
-  let streak = 0;
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  
-  for (let i = 0; i < 90; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().split('T')[0];
-    const data = state.days[key];
-    if (data) {
-      const total = state.habits.filter(h => h.active).length;
-      const done = Object.values(data.habits).filter(Boolean).length;
-      if (total > 0 && done / total >= 0.5) {
-        streak++;
-      } else if (i > 0) break;
-    } else if (i > 0) break;
-  }
-  return streak;
-}
-
-function calculateBestStreak() {
-  let best = 0, current = 0;
-  const start = new Date(state.startDate || new Date());
-  
-  for (let i = 0; i < 90; i++) {
-    const d = new Date(start);
-    d.setDate(d.getDate() + i);
-    const key = d.toISOString().split('T')[0];
-    const data = state.days[key];
-    if (data) {
-      const total = state.habits.filter(h => h.active).length;
-      const done = Object.values(data.habits).filter(Boolean).length;
-      if (total > 0 && done / total >= 0.5) { current++; best = Math.max(best, current); }
-      else current = 0;
-    } else current = 0;
+function bestStreak(){
+  let best=0,cur=0;const start=new Date(S.startDate||new Date());
+  for(let i=0;i<90;i++){
+    const d=new Date(start);d.setDate(d.getDate()+i);
+    const data=S.days[d.toISOString().split('T')[0]];
+    if(data){const total=S.habits.filter(h=>h.active).length;const done=Object.values(data.habits).filter(Boolean).length;if(total>0&&done/total>=0.5){cur++;best=Math.max(best,cur);}else cur=0;}
+    else cur=0;
   }
   return best;
 }
 
-// ==================== UPDATE UI ====================
-function updateAll() {
-  updateHeader();
-  updateDashboard();
-  renderToday();
-  updatePhases();
-  setDailyQuote();
+function avgPct(){
+  const all=Object.values(S.days).map(d=>{const t=S.habits.filter(h=>h.active).length;const dn=Object.values(d.habits).filter(Boolean).length;return t>0?dn/t*100:0;});
+  return all.length?Math.round(all.reduce((a,b)=>a+b,0)/all.length):0;
 }
 
-function updateHeader() {
-  document.getElementById('headerName').textContent = state.user?.name || '';
-  const streak = calculateStreak();
-  document.getElementById('headerStreak').textContent = streak;
-  document.getElementById('statStreak').textContent = streak;
+function goPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p).classList.add('active');
+  document.getElementById('content').scrollTop=0;
+  if(p==='home')updateHome();
+  if(p==='today')renderToday();
+  if(p==='progress')renderProgress();
 }
 
-function setDailyQuote() {
-  const idx = getDayNumber() % QUOTES.length;
-  document.getElementById('dailyQuote').textContent = QUOTES[idx];
+function updateAll(){updateHome();renderToday();}
+
+function updateHome(){
+  const dn=Math.min(dayN(),90);const str=streak();const pct=todayPct();
+  document.getElementById('hStreak').textContent=str;
+  document.getElementById('hName').textContent=S.user?.name||'';
+  document.getElementById('greet').textContent=new Date().getHours()<12?'صباح النور 👋':new Date().getHours()<17?'يسعد مساك 👋':'إزيك يا بطل 👋';
+  document.getElementById('welcomeMsg').textContent='أهلاً يا '+(S.user?.name||'بطل');
+  document.getElementById('dayNum').textContent=dn;
+  document.getElementById('sStreak').textContent=str;
+  const totalDone=Object.values(S.days).filter(d=>{const t=S.habits.filter(h=>h.active).length;const dn2=Object.values(d.habits).filter(Boolean).length;return t>0&&dn2/t>=0.5;}).length;
+  document.getElementById('sDone').textContent=totalDone;
+  const elapsed=Math.min(dayN(),90);
+  document.getElementById('sPct').textContent=elapsed>0?Math.round(totalDone/elapsed*100)+'%':'0%';
+  document.getElementById('sRemain').textContent=Math.max(0,90-dayN()+1);
+  const circ=2*Math.PI*32;
+  document.getElementById('todayRing').style.strokeDashoffset=circ-pct/100*circ;
+  document.getElementById('todayPct').textContent=pct+'%';
+  const phase=dn<=30?1:dn<=60?2:3;
+  const pVal=phase===1?Math.min(Math.max(dn-1,0),30):phase===2?Math.min(Math.max(dn-30,0),30):Math.min(Math.max(dn-60,0),30);
+  const pN={1:['المرحلة 1 — الأساسيات','PHP + WordPress Core + Hooks'],2:['المرحلة 2 — التطوير','WooCommerce + REST API + Performance'],3:['المرحلة 3 — الاحتراف','Portfolio + Freelance + SEO']};
+  document.getElementById('phName').textContent=pN[phase][0];
+  document.getElementById('phDesc').textContent=pN[phase][1];
+  document.getElementById('phBar').style.width=pVal/30*100+'%';
+  document.getElementById('phProg').textContent=pVal+' / 30 يوم';
+  renderCal('calGrid');
 }
 
-function updateDashboard() {
-  const dayNum = getDayNumber();
-  const streak = calculateStreak();
-  const todayPct = getTodayCompletion();
-  
-  // Header stuff
-  document.getElementById('dayNumber').textContent = Math.min(dayNum, 90);
-  document.getElementById('statStreak').textContent = streak;
-  document.getElementById('headerStreak').textContent = streak;
-  
-  // Greeting
-  const hour = new Date().getHours();
-  let greeting = hour < 12 ? 'صباح النور 👋' : hour < 17 ? 'يسعد مساك 👋' : 'إزيك يا بطل 👋';
-  document.getElementById('greetingText').textContent = greeting;
-  document.getElementById('dashWelcome').textContent = `أهلاً يا ${state.user?.name || 'بطل'}`;
-
-  // Completed days
-  const totalDone = Object.values(state.days).filter(d => {
-    const total = state.habits.filter(h => h.active).length;
-    const done = Object.values(d.habits).filter(Boolean).length;
-    return total > 0 && done / total >= 0.5;
-  }).length;
-  
-  document.getElementById('statDone').textContent = totalDone;
-  
-  const elapsed = Math.min(dayNum, 90);
-  const pct = elapsed > 0 ? Math.round((totalDone / elapsed) * 100) : 0;
-  document.getElementById('statPercent').textContent = pct + '%';
-  document.getElementById('statRemain').textContent = Math.max(0, 90 - dayNum + 1);
-
-  // Today ring
-  const circumference = 2 * Math.PI * 56;
-  const offset = circumference - (todayPct / 100) * circumference;
-  document.getElementById('todayRing').style.strokeDashoffset = offset;
-  document.getElementById('todayPercent').textContent = todayPct + '%';
-
-  updatePhases();
-  renderCalendar();
-}
-
-function updatePhases() {
-  const dayNum = getDayNumber();
-  
-  // Phase 1: days 1-30
-  const p1 = Math.min(Math.max(dayNum - 1, 0), 30);
-  document.getElementById('phase1Bar').style.width = (p1/30*100) + '%';
-  document.getElementById('phase1Prog').textContent = p1 + ' / 30 يوم';
-  
-  // Phase 2: days 31-60
-  const p2 = Math.min(Math.max(dayNum - 30, 0), 30);
-  document.getElementById('phase2Bar').style.width = (p2/30*100) + '%';
-  document.getElementById('phase2Prog').textContent = p2 + ' / 30 يوم';
-  
-  // Phase 3: days 61-90
-  const p3 = Math.min(Math.max(dayNum - 60, 0), 30);
-  document.getElementById('phase3Bar').style.width = (p3/30*100) + '%';
-  document.getElementById('phase3Prog').textContent = p3 + ' / 30 يوم';
-
-  // Current phase in dashboard
-  let phase, phaseName, phaseDesc, phaseVal, phaseMax;
-  if (dayNum <= 30) {
-    phase = 1; phaseName = 'المرحلة 1 — الأساسيات';
-    phaseDesc = 'PHP + WordPress Core + Hooks & Filters';
-    phaseVal = p1; phaseMax = 30;
-  } else if (dayNum <= 60) {
-    phase = 2; phaseName = 'المرحلة 2 — التطوير';
-    phaseDesc = 'WooCommerce + REST API + Performance';
-    phaseVal = p2; phaseMax = 30;
-  } else {
-    phase = 3; phaseName = 'المرحلة 3 — الاحتراف';
-    phaseDesc = 'Portfolio + Case Studies + Freelance';
-    phaseVal = p3; phaseMax = 30;
+function renderCal(id){
+  const el=document.getElementById(id);if(!el)return;
+  const start=new Date(S.startDate||new Date());
+  const today=new Date();today.setHours(0,0,0,0);
+  let html='';
+  for(let i=1;i<=90;i++){
+    const d=new Date(start);d.setDate(d.getDate()+i-1);d.setHours(0,0,0,0);
+    const k=d.toISOString().split('T')[0];const data=S.days[k];
+    const isToday=d.getTime()===today.getTime();const isFuture=d>today;
+    let cls='cal-cell';
+    if(isToday)cls+=' today';
+    else if(isFuture)cls+=' future';
+    else if(data){const t=S.habits.filter(h=>h.active).length;const dn2=Object.values(data.habits).filter(Boolean).length;const r=t>0?dn2/t:0;if(r>=0.8)cls+=' done';else if(r>0)cls+=' partial';}
+    html+=`<div class="${cls}">${i}</div>`;
   }
-  
-  if (document.getElementById('phaseName')) {
-    document.getElementById('phaseName').textContent = phaseName;
-    document.getElementById('phaseDesc').textContent = phaseDesc;
-    document.getElementById('phaseBar').style.width = (phaseVal/phaseMax*100) + '%';
-    document.getElementById('phaseProgress').textContent = phaseVal + ' / ' + phaseMax + ' يوم';
-  }
+  el.innerHTML=html;
 }
 
-// ==================== CALENDAR ====================
-function renderCalendar() {
-  const grid = document.getElementById('calendarGrid');
-  if (!grid) return;
-  
-  const start = new Date(state.startDate || new Date());
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const dayNum = getDayNumber();
-  
-  let html = '';
-  const limit = currentView === 'week' ? Math.min(dayNum + 6, 90) : 90;
-  const from = currentView === 'week' ? Math.max(1, dayNum - 6) : 1;
-  
-  for (let i = from; i <= limit; i++) {
-    const d = new Date(start);
-    d.setDate(d.getDate() + i - 1);
-    d.setHours(0,0,0,0);
-    const key = d.toISOString().split('T')[0];
-    const data = state.days[key];
-    const isToday = d.getTime() === today.getTime();
-    
-    let cls = 'day-cell';
-    if (isToday) cls += ' today';
-    
-    if (data) {
-      const total = state.habits.filter(h => h.active).length;
-      const done = Object.values(data.habits).filter(Boolean).length;
-      const ratio = total > 0 ? done / total : 0;
-      if (ratio >= 0.8) cls += ' done-day';
-      else if (ratio > 0) cls += ' partial';
-    }
-    
-    html += `<div class="${cls}" title="يوم ${i}" onclick="showDaySummary('${key}', ${i})">${i}</div>`;
-  }
-  grid.innerHTML = html;
+function renderToday(){
+  const k=tKey();const data=getDd(k);const dn=dayN();
+  const now=new Date();
+  const days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  document.getElementById('todayDateTxt').textContent=`${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]}`;
+  document.getElementById('todayDayBadge').textContent=`يوم ${Math.min(dn,90)}`;
+  const active=S.habits.filter(h=>h.active);
+  const doneCount=active.filter(h=>data.habits[h.id]).length;
+  document.getElementById('habCount').textContent=`${doneCount}/${active.length}`;
+  document.getElementById('habList').innerHTML=active.map(h=>`
+    <div class="habit-row ${data.habits[h.id]?'done':''}" onclick="toggleH(${h.id})">
+      <div class="habit-check">${data.habits[h.id]?'✓':''}</div>
+      <span style="font-size:20px;">${h.emoji}</span>
+      <span style="font-weight:600;flex:1;">${h.name}</span>
+      <span onclick="event.stopPropagation();removeH(${h.id})" style="color:var(--muted);font-size:20px;padding:4px;cursor:pointer;">×</span>
+    </div>`).join('');
+  document.getElementById('noteArea').value=data.note||'';
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('selected',b.textContent.trim()===data.mood));
 }
 
-function switchView(v) {
-  currentView = v;
-  document.getElementById('viewWeek').classList.toggle('active', v === 'week');
-  document.getElementById('viewFull').classList.toggle('active', v === 'full');
-  renderCalendar();
+function toggleH(id){
+  const k=tKey();const data=getDd(k);data.habits[id]=!data.habits[id];
+  save();renderToday();updateHome();
+  toast(data.habits[id]?'✅ أحسنت!':'↩ تم الإلغاء');
+}
+function setMood(m,el){getDd(tKey()).mood=m;save();document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');}
+function saveNote(){getDd(tKey()).note=document.getElementById('noteArea').value;save();}
+function saveDay(){saveNote();save();updateHome();toast('💾 تم حفظ يومك!');}
+
+function openSheet(){document.getElementById('habitSheet').style.display='block';}
+function closeSheet(){document.getElementById('habitSheet').style.display='none';}
+function pEmoji(el){selEmoji=el.textContent.trim();document.getElementById('hEmoji').value=selEmoji;document.querySelectorAll('#habitSheet span[onclick]').forEach(e=>e.style.background='transparent');el.style.background='rgba(108,99,255,0.2)';}
+function addHabit(){
+  const name=document.getElementById('hName').value.trim();
+  const emoji=document.getElementById('hEmoji').value.trim()||selEmoji;
+  if(!name){toast('⚠️ اكتب اسم المهمة');return;}
+  S.habits.push({id:Date.now(),name,emoji,active:true});
+  save();closeSheet();renderToday();document.getElementById('hName').value='';toast('✅ تمت الإضافة');
+}
+function removeH(id){S.habits=S.habits.filter(h=>h.id!==id);save();renderToday();}
+
+function renderProgress(){
+  document.getElementById('pTotal').textContent=Object.keys(S.days).length;
+  document.getElementById('pBest').textContent=bestStreak();
+  document.getElementById('pAvg').textContent=avgPct()+'%';
+  document.getElementById('pRemain2').textContent=Math.max(0,90-dayN()+1);
+  renderCal('fullCal');
+  const entries=Object.entries(S.days).filter(([,d])=>d.note).sort(([a],[b])=>b.localeCompare(a)).slice(0,5);
+  document.getElementById('journal').innerHTML=entries.length?entries.map(([k,d])=>{
+    const dn2=S.startDate?Math.floor((new Date(k)-new Date(S.startDate))/86400000)+1:'-';
+    return `<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span>${d.mood||'📅'}</span><span style="font-weight:700;font-size:12px;color:var(--accent);">يوم ${dn2}</span><span style="font-size:11px;color:var(--muted);">${k}</span></div>
+      <p style="font-size:13px;line-height:1.7;">${d.note}</p></div>`;
+  }).join(''):'<p style="color:var(--muted);text-align:center;padding:16px;font-size:13px;">لسه مفيش ملاحظات ✍️</p>';
 }
 
-// ==================== TODAY ====================
-function renderToday() {
-  const key = getTodayKey();
-  const data = getDayData(key);
-  const dayNum = getDayNumber();
-  
-  // Date display
-  const now = new Date();
-  const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  document.getElementById('todayDate').textContent = `${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  document.getElementById('todayDayNum').textContent = Math.min(dayNum, 90);
+function saveApiKey(){S.apiKey=document.getElementById('newApiKey').value.trim();save();toast('🔑 تم حفظ الـ API Key');}
+function resetApp(){if(!confirm('هتمسح كل بياناتك! مؤكد؟'))return;localStorage.removeItem('nafis_v3');location.reload();}
+function exportData(){const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'})),download:`nafis_${tKey()}.json`});a.click();toast('📤 تم التصدير!');}
 
-  // Habits
-  const list = document.getElementById('habitsList');
-  const activeHabits = state.habits.filter(h => h.active);
-  const doneCount = activeHabits.filter(h => data.habits[h.id]).length;
-  document.getElementById('habitsCount').textContent = `${doneCount}/${activeHabits.length}`;
-  
-  list.innerHTML = activeHabits.map(h => `
-    <div class="habit-item ${data.habits[h.id] ? 'done' : ''}" onclick="toggleHabit(${h.id})">
-      <div class="habit-check">${data.habits[h.id] ? '✓' : ''}</div>
-      <span style="font-size:18px;">${h.emoji}</span>
-      <span class="font-semibold flex-1">${h.name}</span>
-      <button onclick="event.stopPropagation();removeHabit(${h.id})" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:18px;">×</button>
-    </div>
-  `).join('');
+function toggleTimer(){
+  if(timerOn){clearInterval(timerIv);timerOn=false;document.getElementById('timerBtn').textContent='▶';}
+  else{timerOn=true;document.getElementById('timerBtn').textContent='⏸';timerIv=setInterval(()=>{if(timerSec<=0){clearInterval(timerIv);timerOn=false;document.getElementById('timerBtn').textContent='▶';toast('🎉 انتهت الجلسة! عظيم');return;}timerSec--;updTimer();},1000);}
+}
+function resetTimer(){clearInterval(timerIv);timerOn=false;timerSec=parseInt(document.getElementById('timerSel').value)*60;document.getElementById('timerBtn').textContent='▶';updTimer();}
+function updTimer(){const m=Math.floor(timerSec/60),s=timerSec%60;document.getElementById('timerDisp').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
 
-  // Note
-  document.getElementById('todayNote').value = data.note || '';
-  
-  // Mood
-  document.querySelectorAll('.mood-btn').forEach(btn => {
-    btn.style.background = btn.textContent.trim() === data.mood ? 'rgba(255,255,255,0.1)' : 'transparent';
-  });
+function buildCtx(){
+  const dn=Math.min(dayN(),90);const str=streak();const phase=dn<=30?1:dn<=60?2:3;
+  const recentDays=[];const today=new Date();
+  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);d.setHours(0,0,0,0);const k=d.toISOString().split('T')[0];const data=S.days[k];if(data){const total=S.habits.filter(h=>h.active).length;const done=Object.values(data.habits).filter(Boolean).length;recentDays.push({date:k,pct:total>0?Math.round(done/total*100):0,mood:data.mood||'-',note:data.note?.substring(0,50)||''}); }}
+  const phN={1:'الأساسيات (PHP+WordPress+Hooks)',2:'التطوير (WooCommerce+REST API)',3:'الاحتراف (Portfolio+Freelance)'};
+  return `أنت "نافس AI" — مساعد شخصي ذكي ومحفز يتكلم عربي بأسلوب صريح ومباشر.
+
+== المستخدم ==
+الاسم: ${S.user?.name} | الهدف: ${S.user?.goal}
+اليوم: ${dn}/90 | المرحلة: ${phase} — ${phN[phase]}
+Streak: ${str} يوم | متوسط: ${avgPct()}% | اليوم: ${todayPct()}%
+
+== آخر 7 أيام ==
+${recentDays.map(d=>`${d.date}: ${d.pct}% مزاج:${d.mood}${d.note?' "'+d.note+'"':''}`).join('\n')||'لا توجد بيانات'}
+
+== المهام ==
+${S.habits.filter(h=>h.active).map(h=>h.emoji+' '+h.name).join(' | ')}
+
+قواعد: رد عربي، مباشر، عملي، محفز. استخدم البيانات الحقيقية. لا تطول.`.trim();
 }
 
-function toggleHabit(id) {
-  const key = getTodayKey();
-  const data = getDayData(key);
-  data.habits[id] = !data.habits[id];
-  save();
-  renderToday();
-  updateDashboard();
-  showToast(data.habits[id] ? '✅ تم!' : '↩ تم الإلغاء');
+async function callAI(msg,sys){
+  if(!S.apiKey)return'⚠️ محتاج API Key من Anthropic — روح صفحة التقدم ← الإعدادات وحطه هناك.\n\nللحصول عليه: console.anthropic.com ← API Keys';
+  const msgs=[...chatHist,{role:'user',content:msg}];
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:sys||buildCtx(),messages:msgs})
+    });
+    if(!res.ok){const e=await res.json().catch(()=>({}));if(res.status===401)return'❌ الـ API Key غلط. تأكد منه.';if(res.status===429)return'⏳ ضغط على الـ API، استنى ثواني وحاول.';return`❌ خطأ ${res.status}: ${e.error?.message||'حاول تاني'}`;}
+    const data=await res.json();return data.content?.[0]?.text||'مفيش رد.';
+  }catch(e){return'❌ مشكلة في الاتصال. تأكد من الإنترنت وإن الـ CORS مش محجوب.';}
 }
 
-function setMood(mood, el) {
-  const key = getTodayKey();
-  getDayData(key).mood = mood;
-  save();
-  document.querySelectorAll('.mood-btn').forEach(b => b.style.background = 'transparent');
-  el.style.background = 'rgba(255,255,255,0.1)';
+async function sendMsg(){
+  const input=document.getElementById('chatIn');const msg=input.value.trim();if(!msg)return;
+  input.value='';addBubble(msg,'user');chatHist.push({role:'user',content:msg});
+  document.getElementById('sendBtn').disabled=true;showTyping();
+  const reply=await callAI(msg);
+  hideTyping();addBubble(reply,'ai');chatHist.push({role:'assistant',content:reply});
+  if(chatHist.length>20)chatHist=chatHist.slice(-20);
+  document.getElementById('sendBtn').disabled=false;
 }
 
-function saveTodayNote() {
-  const key = getTodayKey();
-  getDayData(key).note = document.getElementById('todayNote').value;
-  save();
+function qp(msg){document.getElementById('chatIn').value=msg;sendMsg();}
+
+function addBubble(txt,role){
+  const wrap=document.createElement('div');wrap.style.cssText=`display:flex;justify-content:${role==='user'?'flex-start':'flex-end'};`;
+  wrap.innerHTML=`<div class="bubble ${role}" style="white-space:pre-wrap;">${txt}</div>`;
+  const msgs=document.getElementById('chatMsgs');msgs.appendChild(wrap);msgs.scrollTop=msgs.scrollHeight;
 }
 
-function saveDay() {
-  saveTodayNote();
-  save();
-  updateDashboard();
-  showToast('💾 تم حفظ يومك!');
+function showTyping(){const msgs=document.getElementById('chatMsgs');const div=document.createElement('div');div.id='typing';div.style.cssText='display:flex;justify-content:flex-end;';div.innerHTML='<div class="bubble ai"><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
+function hideTyping(){const el=document.getElementById('typing');if(el)el.remove();}
+
+async function genInsight(){
+  const btn=document.getElementById('insightBtn');const txt=document.getElementById('insightTxt');
+  btn.disabled=true;btn.textContent='⏳';
+  txt.innerHTML='<div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  const r=await callAI('حلل أدائي بإيجاز: 1) إيه بعمله كويس 2) إيه أحسنه 3) نصيحة واحدة لليوم. 3-4 جمل بس.',buildCtx());
+  txt.textContent=r;btn.disabled=false;btn.textContent='تحليل';
 }
 
-// ==================== HABITS ====================
-function openAddHabit() {
-  document.getElementById('addHabitModal').style.display = 'flex';
+async function suggestTask(){
+  const el=document.getElementById('taskSuggest');el.textContent='⏳ بفكر...';
+  const dow=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][new Date().getDay()];
+  const r=await callAI(`يوم ${dow}. اقترح مهمة واحدة محددة لجلسة المذاكرة حسب مرحلتي. اسم المهمة + جملة شرح + السبب. مش أكتر من 3 جمل.`,buildCtx());
+  el.textContent=r;
 }
 
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
+async function weeklyReport(){
+  const btn=document.getElementById('reportBtn');const txt=document.getElementById('reportTxt');
+  btn.disabled=true;btn.textContent='⏳';
+  txt.innerHTML='<div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  const r=await callAI('اعملي تقرير أسبوعي: الإنجازات، التحديات، نقاط القوة والضعف، وتوصية للأسبوع الجاي. صريح وعملي.',buildCtx());
+  txt.textContent=r;btn.disabled=false;btn.textContent='اعمل تقرير';
 }
 
-function pickEmoji(el) {
-  selectedEmoji = el.textContent.trim();
-  document.getElementById('newHabitEmoji').value = selectedEmoji;
-  document.querySelectorAll('.emoji-pick').forEach(e => e.style.background = 'transparent');
-  el.style.background = 'rgba(108,99,255,0.2)';
-}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.transform='translateX(-50%) translateY(80px)';},2500);}
 
-function addHabit() {
-  const name = document.getElementById('newHabitName').value.trim();
-  const emoji = document.getElementById('newHabitEmoji').value.trim() || selectedEmoji;
-  if (!name) { showToast('⚠️ اكتب اسم المهمة'); return; }
-  
-  const id = Date.now();
-  state.habits.push({ id, name, emoji, active: true });
-  save();
-  closeModal('addHabitModal');
-  renderToday();
-  document.getElementById('newHabitName').value = '';
-  showToast('✅ تمت الإضافة');
-}
-
-function removeHabit(id) {
-  state.habits = state.habits.filter(h => h.id !== id);
-  save();
-  renderToday();
-}
-
-// ==================== PROGRESS ====================
-function renderProgress() {
-  const dayNum = getDayNumber();
-  const streak = calculateStreak();
-  const best = calculateBestStreak();
-  
-  document.getElementById('progTotal').textContent = Object.keys(state.days).length;
-  document.getElementById('progBest').textContent = best;
-  
-  const allPcts = Object.values(state.days).map(d => {
-    const total = state.habits.filter(h => h.active).length;
-    const done = Object.values(d.habits).filter(Boolean).length;
-    return total > 0 ? (done / total) * 100 : 0;
-  });
-  const avg = allPcts.length ? Math.round(allPcts.reduce((a,b) => a+b, 0) / allPcts.length) : 0;
-  document.getElementById('progAvg').textContent = avg + '%';
-
-  // Full calendar
-  const start = new Date(state.startDate || new Date());
-  const today = new Date(); today.setHours(0,0,0,0);
-  let html = '';
-  
-  for (let i = 1; i <= 90; i++) {
-    const d = new Date(start);
-    d.setDate(d.getDate() + i - 1);
-    d.setHours(0,0,0,0);
-    const key = d.toISOString().split('T')[0];
-    const data = state.days[key];
-    const isToday = d.getTime() === today.getTime();
-    
-    let cls = 'day-cell';
-    if (isToday) cls += ' today';
-    if (data) {
-      const total = state.habits.filter(h => h.active).length;
-      const done = Object.values(data.habits).filter(Boolean).length;
-      const ratio = total > 0 ? done / total : 0;
-      if (ratio >= 0.8) cls += ' done-day';
-      else if (ratio > 0) cls += ' partial';
-    }
-    html += `<div class="${cls}" title="يوم ${i}" style="width:30px;height:30px;font-size:10px;">${i}</div>`;
-  }
-  document.getElementById('fullCalendar').innerHTML = html;
-
-  // Journal
-  const journalEntries = Object.entries(state.days)
-    .filter(([k, d]) => d.note)
-    .sort(([a],[b]) => b.localeCompare(a))
-    .slice(0, 5);
-  
-  if (journalEntries.length === 0) {
-    document.getElementById('journalList').innerHTML = `<p style="color:var(--muted);text-align:center;padding:20px;">لسه مفيش ملاحظات. سجّل يومك الأول! ✍️</p>`;
-  } else {
-    document.getElementById('journalList').innerHTML = journalEntries.map(([key, data]) => {
-      const d = new Date(key);
-      const dayNum = state.startDate ? Math.floor((d - new Date(state.startDate)) / 86400000) + 1 : '-';
-      return `
-        <div style="padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:14px;">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-lg">${data.mood || '📅'}</span>
-            <span class="font-bold text-sm" style="color:var(--accent);">يوم ${dayNum}</span>
-            <span class="text-xs" style="color:var(--muted);">${key}</span>
-          </div>
-          <p class="text-sm" style="color:var(--text);line-height:1.7;">${data.note}</p>
-        </div>
-      `;
-    }).join('');
-  }
-}
-
-// ==================== TIMER ====================
-function setTimer() {
-  const mins = parseInt(document.getElementById('timerSelect').value);
-  timerSeconds = mins * 60;
-  resetTimer();
-}
-
-function toggleTimer() {
-  if (timerRunning) {
-    clearInterval(timerInterval);
-    timerRunning = false;
-    document.getElementById('timerBtn').textContent = '▶ استكمل';
-  } else {
-    timerRunning = true;
-    document.getElementById('timerBtn').textContent = '⏸ وقف';
-    timerInterval = setInterval(() => {
-      if (timerSeconds <= 0) {
-        clearInterval(timerInterval);
-        timerRunning = false;
-        document.getElementById('timerBtn').textContent = '▶ ابدأ';
-        showToast('🎉 انتهت الجلسة! عظيم');
-        return;
-      }
-      timerSeconds--;
-      updateTimerDisplay();
-    }, 1000);
-  }
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerRunning = false;
-  const mins = parseInt(document.getElementById('timerSelect').value);
-  timerSeconds = mins * 60;
-  document.getElementById('timerBtn').textContent = '▶ ابدأ';
-  updateTimerDisplay();
-}
-
-function updateTimerDisplay() {
-  const m = Math.floor(timerSeconds / 60);
-  const s = timerSeconds % 60;
-  document.getElementById('timerDisplay').textContent = 
-    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-}
-
-// ==================== EXPORT ====================
-function exportData() {
-  const json = JSON.stringify(state, null, 2);
-  const blob = new Blob([json], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `nafis_backup_${getTodayKey()}.json`;
-  a.click();
-  showToast('📤 تم التصدير!');
-}
-
-// ==================== TOAST ====================
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.style.transform = 'translateX(-50%) translateY(0)';
-  setTimeout(() => { toast.style.transform = 'translateX(-50%) translateY(80px)'; }, 2500);
-}
-
-// ==================== START ====================
 init();
 </script>
 </body>
