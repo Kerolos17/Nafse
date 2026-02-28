@@ -2371,39 +2371,50 @@ ${S.habits
         if (!S.apiKey)
           return "⚠️ محتاج API Key من Anthropic — روح صفحة التقدم ← الإعدادات وحطه هناك.\n\nللحصول عليه: console.anthropic.com ← API Keys";
         const msgs = [...chatHist, { role: "user", content: msg }];
+
+        // Check if running on Vercel or localhost with vercel dev
+        const isVercel =
+          window.location.hostname !== "localhost" &&
+          window.location.protocol !== "file:";
+        const isVercelDev =
+          window.location.hostname === "localhost" &&
+          window.location.port === "3000";
+
         try {
-          // Use Vercel serverless function as proxy
-          const apiUrl =
-            window.location.hostname === "localhost" ||
-            window.location.protocol === "file:"
-              ? "http://localhost:3000/api/chat"
-              : "/api/chat";
+          if (isVercel || isVercelDev) {
+            // Use Vercel serverless function
+            const res = await fetch("/api/chat", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                apiKey: S.apiKey,
+                messages: msgs,
+                system: sys || buildCtx(),
+              }),
+            });
 
-          const res = await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              apiKey: S.apiKey,
-              messages: msgs,
-              system: sys || buildCtx(),
-            }),
-          });
+            if (!res.ok) {
+              const e = await res.json().catch(() => ({}));
+              if (res.status === 401 || e.status === 401)
+                return "❌ الـ API Key غلط. تأكد منه.";
+              if (res.status === 429 || e.status === 429)
+                return "⏳ ضغط على الـ API، استنى ثواني وحاول.";
+              return `❌ خطأ ${res.status}: ${e.error || e.message || "حاول تاني"}`;
+            }
 
-          if (!res.ok) {
-            const e = await res.json().catch(() => ({}));
-            if (res.status === 401 || e.status === 401)
-              return "❌ الـ API Key غلط. تأكد منه.";
-            if (res.status === 429 || e.status === 429)
-              return "⏳ ضغط على الـ API، استنى ثواني وحاول.";
-            return `❌ خطأ ${res.status}: ${e.error || e.message || "حاول تاني"}`;
+            const data = await res.json();
+            return data.content?.[0]?.text || "مفيش رد.";
+          } else {
+            // Direct API call for local testing (will have CORS issues)
+            return "⚠️ للاستخدام المحلي:\n\n1️⃣ شغّل: vercel dev\n2️⃣ افتح: http://localhost:3000\n\nأو ارفع على Vercel مباشرة!";
           }
-
-          const data = await res.json();
-          return data.content?.[0]?.text || "مفيش رد.";
         } catch (e) {
           console.error("API Error:", e);
+          if (e.message && e.message.includes("Failed to fetch")) {
+            return "❌ مفيش اتصال بالـ API.\n\nللتشغيل المحلي:\n• شغّل: vercel dev\n• افتح: http://localhost:3000\n\nأو ارفع المشروع على Vercel!";
+          }
           return "❌ مشكلة في الاتصال. تأكد من الإنترنت.";
         }
       }
